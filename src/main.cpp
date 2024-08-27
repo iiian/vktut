@@ -3,7 +3,7 @@
 
 int main()
 {
-  HelloTriangleApplication app;
+  HelloTriangleApplication app{};
 
   try
   {

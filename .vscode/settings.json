@@ -5,6 +5,7 @@
   "files.associations": {
     "*.fragmentshader": "glsl",
     "*.vertexshader": "glsl",
-    "vector": "cpp"
+    "vector": "cpp",
+    "map": "cpp"
   }
 }

@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <fmt/format.h>
+#include <map>
 
 #define WIDTH 800
 #define HEIGHT 600
@@ -32,6 +33,45 @@ void HelloTriangleApplication::initVulkan()
   createInstance();
   // TODO: enable setupDebugMessenger();
   pickPhysicalDevice();
+}
+
+/* For now, a lazy implementation. If we find it, it's probably suitable. */
+bool HelloTriangleApplication::isDeviceSuitable(VkPhysicalDevice device)
+{
+  return findQueueFamilies(device).isComplete();
+}
+
+void HelloTriangleApplication::pickPhysicalDevice()
+{
+  VkPhysicalDevice phys_device = VK_NULL_HANDLE;
+  uint32_t dev_count = 0;
+  vkEnumeratePhysicalDevices(instance, &dev_count, nullptr);
+
+  if (dev_count == 0)
+  {
+    throw std::runtime_error("no GPU detected");
+  }
+
+  std::vector<VkPhysicalDevice> devices(dev_count);
+  vkEnumeratePhysicalDevices(instance, &dev_count, devices.data());
+
+  for (const auto &device : devices)
+  {
+    if (isDeviceSuitable(device))
+    {
+      phys_device = device;
+      break;
+    }
+  }
+
+  if (phys_device == VK_NULL_HANDLE)
+  {
+    throw std::runtime_error("No registered GPU is Vulkan-compatible");
+  }
+  else
+  {
+    fmt::println("DEBUG: Found a suitable physical device");
+  }
 }
 
 void HelloTriangleApplication::createInstance()
@@ -89,8 +129,32 @@ void HelloTriangleApplication::createInstance()
   }
 }
 
-void HelloTriangleApplication::pickPhysicalDevice()
+QueueFamilyIndices HelloTriangleApplication::findQueueFamilies(VkPhysicalDevice device)
 {
+  QueueFamilyIndices qfi;
+
+  uint32_t family_count = 0;
+  vkGetPhysicalDeviceQueueFamilyProperties(device, &family_count, nullptr);
+  std::vector<VkQueueFamilyProperties> qfams(family_count);
+  vkGetPhysicalDeviceQueueFamilyProperties(device, &family_count, qfams.data());
+
+  int i = 0;
+  for (const auto &qf : qfams)
+  {
+    if (qf.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+    {
+      qfi.graphicsFamily = i;
+    }
+
+    if (qfi.isComplete())
+    {
+      break;
+    }
+
+    i++;
+  }
+
+  return qfi;
 }
 
 bool HelloTriangleApplication::checkValidationLayerSupport()
