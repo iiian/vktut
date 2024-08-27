@@ -1,0 +1,20 @@
+# Ignore build directory
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+
+# Ignore generated files
+/Makefile
+/install_manifest.txt
+/*.cmake
+/*.vcxproj*
+/*.sln
+/*.ninja
+/*.dir
+
+# Ignore logs and temporary files
+/Testing/
+/CTestTestfile.cmake
+/*.log
+/*.tmp
+/.vs/
